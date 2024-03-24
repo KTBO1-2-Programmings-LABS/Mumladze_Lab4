@@ -1,10 +1,12 @@
 using namespace System;
-using namespace System::Collections;
 using namespace System::IO;
+using namespace System::Collections;
+using namespace System::Collections::Generic;
 
+// Структура записи связи {книга, дисциплина}
 ref struct Link {
-	String^ book;
-	String^ subject;
+	String^ ISBN;
+	String^ dis_code;
 };
 
 // Структура записи одной книги
@@ -14,9 +16,39 @@ ref struct Book {
 	String^ author;
 };
 
+// Структура записи одной дисциплины
 ref struct Subject {
+	String^ dis_code;
 	String^ name;
 	String^ description;
+};
+
+// Класс, управляющий информацией о связях {книга, дисциплина}
+ref class LinkManager {
+private:
+	// Имя файла с данными о связях
+	String^ fileName;
+	// Список связей {книга, дисциплина}
+	List<Object^>^ links;
+public:
+	// Конструктор класса
+	LinkManager();
+	// Чтение списка связей из файла
+	void ReadLinkListFromFile(void);
+	// Запись списка связей в файл
+	void WriteLinkListToFile(void);
+	// Добавить связь в список
+	void AddLinkToList(String^);
+	// Удалить связь по ISBN и dis_code
+	void RemoveLinkFromList(String^, String^);
+	// Удалить все связи по книге (через объект BookManager или напрямую)
+	void RemoveAllLinksByBook(String^);
+	// Удалить все связи по дисциплине (через объект SubjectManager или напрямую)
+	void RemoveAllLinksBySubject(String^);
+	// Найти связи по книге
+	List<Object^>^ FindSubjectsByBook(String^);
+	// Найти связи по дисциплине
+	List<Object^>^ FindBooksBySubject(String^);
 };
 
 // Класс, управляющий информацией о книгах
@@ -25,12 +57,12 @@ private:
 	// Имя файла с данными о книгах
 	String^ fileName;
 	// Список книг
-	ArrayList^ books;
-	// Список связей {книга, дисциплина}
-	ArrayList^ links;
+	List<Object^>^ books;
+	// Указатель на объект класса LinkManager
+	LinkManager^ lm;
 public:
 	// Конструктор класса
-	BookManager(void);
+	BookManager(LinkManager^);
 	// Чтение списка книг из файла
 	void ReadBookListFromFile(void);
 	// Запись списка книг в файл
@@ -43,49 +75,26 @@ public:
 	String^ FindISBNByName(String^);
 };
 
-/* // Класс, управляющий информацией о дисциплинах
+// Класс, управляющий информацией о дисциплинах
 ref class SubjectManager {
 private:
 	// Имя файла с данными о книгах
 	String^ fileName;
 	// Список дисциплин
-	ArrayList^ Books;
-	// Список связей {книга, дисциплина}
-	ArrayList^ Links;
+	List<Object^>^ subjects;
+	// Указатель на объект класса LinkManager
+	LinkManager^ lm;
 public:
 	// Конструктор класса
-	SubjectManager(void);
+	SubjectManager(LinkManager^);
 	// Чтение списка дисциплин из файла
 	void ReadSubjectListFromFile(void);
 	// Запись списка в файл
 	void WriteSubjectListToFile(void);
 	// Добавление книги в список
 	void AddSubjectToList(String^);
-	// Удаление книги из списка
+	// Удаление книги из списка (по коду дисциплины)
 	void RemoveSubjectFromList(String^);
+	// Получить код дисциплины по ее названию
+	String^ FindDisCodeByName(String^);
 };
-
-ref class LinkManager {
-private:
-	// Указатель на объект класса BookManager
-	BookManager^ bm;
-	// Указатель на объект класса SubjectManager
-	SubjectManager^ sm;
-	// Имя файла с данными о связях
-	String^ fileName;
-	// Список связей {книга, дисциплина}
-	ArrayList^ links;
-public:
-	// Конструктор класса
-	LinkManager(void);
-	// Чтение списка связей из файла
-	void ReadLinkListFromFile(void);
-	// Запись списка связей в файл
-	void WriteLinkListToFile(void);
-	// Найти связи по книге
-	void FindSubjectsByBook(String^);
-	// Найти связи по дисциплине
-	void FindBooksBySubject(String^);
-};
-
-*/
